@@ -1,27 +1,49 @@
----
-title: "WebDriver"
-linkTitle: "WebDriver"
-weight: 2
-description: >
-  WebDriver drives a browser natively; learn more about it.
-aliases: ["/documentation/en/webdriver/"]
----
+https://web.grindr.com/browser--
 
 
-WebDriver drives a browser natively, as a user would, either locally
-or on a remote machine using the Selenium server,
-marks a leap forward in terms of browser automation.
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from bs4 import BeautifulSoup
 
-Selenium WebDriver refers to both the language bindings
-and the implementations of the individual browser controlling code.
-This is commonly referred to as just _WebDriver_.
+def extract_grindr_profiles(url):   1. github.com github.com
+    """Extrai informações de perfis do Grindr Web (hipotético)."""
 
-Selenium WebDriver is a [W3C Recommendation](https://www.w3.org/TR/webdriver1/)
+    options = Options()
+    options.add_argument('--headless=new') 
+    driver = webdriver.Chrome(options=options)
 
-* WebDriver is designed as a simple
-  and more concise programming interface.
+    try:
+        driver.get(url)
+        driver.implicitly_wait(10) 
 
-* WebDriver is a compact object-oriented API.
+        page_source = driver.page_source
+        soup = BeautifulSoup(page_source, 'html.parser')
 
-* It drives the browser effectively.
+        profiles = soup.find_all('div', class_='profile-card') 
 
+        data = []
+        for profile in profiles:
+            name = profile.find('h3', class_='profile-name').text.strip()
+            age = profile.find('span', class_='profile-age').text.strip()
+            location = profile.find('span', class_='profile-location').text.strip()
+
+            data.append({
+                'name': name,
+                'age': age,
+                'location': location,
+            })
+
+        return data
+    
+    finally:
+        driver.quit()
+
+if __name__ == "__main__":
+    url = 'https://web.grindr.com/browse'
+
+    try:
+        profiles = extract_grindr_profiles(url)
+        for profile in profiles:
+            print(profile)
+    except Exception as e:
+        print(f"Erro ao extrair dados: {e}")
